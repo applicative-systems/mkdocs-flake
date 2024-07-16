@@ -5,7 +5,7 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     flake-parts.inputs.nixpkgs-lib.follows = "nixpkgs";
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    poetry2nix.url = "github:tfc/poetry2nix";
+    poetry2nix.url = "github:nix-community/poetry2nix";
     poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
@@ -69,18 +69,8 @@
             mkdocs-python = pkgs.poetry2nix.mkPoetryEnv {
               inherit python;
               projectDir = ./mkdocs;
-              overrides = pkgs.poetry2nix.overrides.withDefaults (self: super: {
-                # TODO: upstream
-                mkdocs-glightbox = super.mkdocs-glightbox.overridePythonAttrs (old: {
-                  buildInputs = (old.buildInputs or [ ]) ++ [ self.setuptools ];
-                });
-                plantuml-markdown = super.plantuml-markdown.overridePythonAttrs (old: {
-                  buildInputs = (old.buildInputs or [ ]) ++ [ self.setuptools ];
-                  postPatch = ''
-                    touch test-requirements.txt
-                  '';
-                });
-              });
+              overrides = pkgs.poetry2nix.overrides.withDefaults
+                (import ./python-overrides.nix);
             };
 
             mkdocs = pkgs.runCommand "mkdocs" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
