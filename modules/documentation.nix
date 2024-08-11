@@ -32,7 +32,7 @@ in
 
     apps.watch-documentation = {
       type = "app";
-      program = pkgs.writeScriptBin "mkdocs-watch" ''
+      program = pkgs.writeShellScriptBin "mkdocs-watch" ''
         ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
       '';
     };
