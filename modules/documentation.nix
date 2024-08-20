@@ -21,7 +21,12 @@ in
       description = "The mkdocs package to use.";
     };
 
-    strict = lib.mkEnableOption "build the documentation with `--strict`";
+    strict = lib.mkEnableOption ''
+      Build the documentation with `--strict`
+
+      See also [mkdocs user guide about `--strict`](https://www.mkdocs.org/user-guide/configuration/#strict)
+
+    '';
   };
 
   config = lib.mkIf (cfg.mkdocs-root != null) {
