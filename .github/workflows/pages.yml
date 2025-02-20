@@ -32,9 +32,9 @@ jobs:
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - run: nix -L build .#documentation && cp --recursive --dereference --no-preserve=mode,ownership result static_content
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: 'static_content'
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
