@@ -9,6 +9,9 @@ self: super: {
   mkdocs-drawio-exporter = super.mkdocs-drawio-exporter.overridePythonAttrs (old: {
     buildInputs = (old.buildInputs or [ ]) ++ [ self.poetry-core ];
   });
+  mkdocs-redirects = super.mkdocs-redirects.overridePythonAttrs (old: {
+    buildInputs = (old.buildInputs or [ ]) ++ [ self.hatchling ];
+  });
   plantuml-markdown = super.plantuml-markdown.overridePythonAttrs (old: {
     buildInputs = (old.buildInputs or [ ]) ++ [ self.setuptools ];
     postPatch = ''
