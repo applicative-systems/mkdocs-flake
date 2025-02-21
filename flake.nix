@@ -81,29 +81,6 @@
                 ]}
             '';
 
-            docker = pkgs.dockerTools.buildImage {
-              name = "applicativesystems/mkdocs";
-              tag = "latest";
-
-              copyToRoot = pkgs.buildEnv {
-                name = "image-root";
-                paths = [
-                  config.packages.mkdocs
-                ];
-                pathsToLink = [ "/bin" ];
-              };
-
-              config = {
-                Cmd = [ "/bin/mkdocs" "serve" ];
-                WorkingDir = "/data";
-                Volumes = { "/data" = { }; };
-              };
-
-              runAsRoot = ''
-                #!${pkgs.runtimeShell}
-                ${pkgs.dockerTools.shadowSetup}
-              '';
-            };
 
             flake-parts-options =
               let
@@ -145,6 +122,31 @@
                   ${config.packages.mkdocs}/bin/mkdocs build --strict --site-dir $out
                   sed -i 's|/nix/store/[^/]\+/||g' $out/integration/flake-parts.html
                 '';
+          } // lib.optionalAttrs pkgs.stdenv.isLinux {
+
+            docker = pkgs.dockerTools.buildImage {
+              name = "applicativesystems/mkdocs";
+              tag = "latest";
+
+              copyToRoot = pkgs.buildEnv {
+                name = "image-root";
+                paths = [
+                  config.packages.mkdocs
+                ];
+                pathsToLink = [ "/bin" ];
+              };
+
+              config = {
+                Cmd = [ "/bin/mkdocs" "serve" ];
+                WorkingDir = "/data";
+                Volumes = { "/data" = { }; };
+              };
+
+              runAsRoot = ''
+                #!${pkgs.runtimeShell}
+                ${pkgs.dockerTools.shadowSetup}
+              '';
+            };
           };
 
           apps = {
