@@ -101,7 +101,7 @@
             ];
           };
 
-          documentation.mkdocs-root = "./documentation";
+          documentation.mkdocs-root = ./documentation;
 
           packages = {
             default = config.packages.mkdocs;
