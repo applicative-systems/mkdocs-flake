@@ -1,38 +1,29 @@
-[tool.poetry]
-name = "mkdocs-env"
+[project]
+name = "mkdocs-distro"
 version = "0.1.0"
-description = ""
-authors = ["Jacek Galowicz"]
+description = "Add your description here"
 readme = "README.md"
-packages = []
-
-[tool.poetry.dependencies]
-python = "^3.11"
-
-cairosvg = "*"
-pillow = "*"
-
-mkdocs = "*"
-mkdocs-autorefs = "*"
-mkdocs-awesome-pages-plugin = "*"
-mkdocs-drawio-exporter = "*"
-mkdocs-exclude = "*"
-mkdocs-exclude-search = "*"
-mkdocs-gen-files = "*"
-mkdocs-git-authors-plugin = "*"
-mkdocs-git-revision-date-localized-plugin = "*"
-mkdocs-gitlab = "*"
-mkdocs-jupyter = "*"
-mkdocs-linkcheck = "*"
-mkdocs-material = "*"
-mkdocs-material-extensions = "*"
-mkdocs-mermaid2-plugin = "*"
-mkdocs-redirects = "*"
-mkdocs-simple-hooks = "*"
-mkdocs-swagger-ui-tag = "*"
-mkdocs-glightbox = "*"
-plantuml-markdown = "*"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+requires-python = ">=3.12"
+dependencies = [
+    "cairosvg>=2.7.1",
+    "mkdocs-autorefs>=1.4.1",
+    "mkdocs-awesome-pages-plugin>=2.10.1",
+    "mkdocs-drawio-exporter>=0.10.1",
+    "mkdocs-exclude>=1.0.2",
+    "mkdocs-exclude-search>=0.6.6",
+    "mkdocs-gen-files>=0.5.0",
+    "mkdocs-git-authors-plugin>=0.9.4",
+    "mkdocs-git-revision-date-localized-plugin>=1.4.5",
+    "mkdocs-gitlab>=1.4.0",
+    "mkdocs-glightbox>=0.4.0",
+    "mkdocs-jupyter>=0.25.1",
+    "mkdocs-linkcheck>=1.0.6",
+    "mkdocs-material>=9.6.9",
+    "mkdocs-material-extensions>=1.3.1",
+    "mkdocs-mermaid2-plugin>=1.2.1",
+    "mkdocs-redirects>=1.2.2",
+    "mkdocs-simple-hooks>=0.1.5",
+    "mkdocs-swagger-ui-tag>=0.6.11",
+    "pillow>=11.1.0",
+    "plantuml-markdown>=3.11.1",
+]

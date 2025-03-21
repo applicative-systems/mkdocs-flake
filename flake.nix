@@ -7,6 +7,24 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     poetry2nix.url = "github:nix-community/poetry2nix";
     poetry2nix.inputs.nixpkgs.follows = "nixpkgs";
+
+    pyproject-nix = {
+      url = "github:pyproject-nix/pyproject.nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    uv2nix = {
+      url = "github:pyproject-nix/uv2nix";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    pyproject-build-systems = {
+      url = "github:pyproject-nix/build-system-pkgs";
+      inputs.pyproject-nix.follows = "pyproject-nix";
+      inputs.uv2nix.follows = "uv2nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } ({ withSystem, flake-parts-lib, ... }:
@@ -43,7 +61,28 @@
       ];
       perSystem = { config, self', inputs', pkgs, lib, system, ... }:
         let
-          python = pkgs.python3;
+          workspace = inputs.uv2nix.lib.workspace.loadWorkspace {
+            workspaceRoot = ./mkdocs;
+          };
+          overlay = workspace.mkPyprojectOverlay {
+            sourcePreference = "wheel";
+          };
+
+          pyprojectOverrides = import ./uv-overrides.nix;
+
+          python = pkgs.python312;
+
+          pythonSet =
+            (pkgs.callPackage inputs.pyproject-nix.build.packages {
+              inherit python;
+            }).overrideScope
+              (
+                lib.composeManyExtensions [
+                  inputs.pyproject-build-systems.overlays.default
+                  overlay
+                  pyprojectOverrides
+                ]
+              );
         in {
           _module.args.pkgs = import inputs.nixpkgs {
             inherit system;
@@ -55,11 +94,10 @@
 
           devShells.default = pkgs.mkShell {
             nativeBuildInputs = [
-              config.packages.default
-              pkgs.poetry
               python.pkgs.plantuml-markdown
               pkgs.fontconfig
               pkgs.dejavu_fonts
+              pkgs.uv
             ];
           };
 
@@ -68,13 +106,7 @@
           packages = {
             default = config.packages.mkdocs;
 
-            mkdocs-python = pkgs.poetry2nix.mkPoetryEnv {
-              inherit python;
-              projectDir = ./mkdocs;
-              overrides = pkgs.poetry2nix.overrides.withDefaults
-                (import ./python-overrides.nix);
-            };
-
+            mkdocs-python = pythonSet.mkVirtualEnv "mkdocs-env" workspace.deps.default;
             mkdocs = pkgs.runCommand "mkdocs" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
               makeWrapper ${config.packages.mkdocs-python}/bin/mkdocs $out/bin/mkdocs \
                 --set PATH ${lib.makeBinPath [
