@@ -42,9 +42,9 @@ in
       program = pkgs.writeShellScriptBin "mkdocs-watch" ''
         set -euo pipefail
         if ! test -f mkdocs.yml; then
-          if test -f "${docsRoot}/mkdocs.yml"; then
-            echo "Your documentation is in ${docsRoot}. Switching into that folder."
-            cd "${docsRoot}"
+          if test -f "${cfg.mkdocs-root}/mkdocs.yml"; then
+            echo "Your documentation is in ${cfg.mkdocs-root}. Switching into that folder."
+            cd "${cfg.mkdocs-root}"
           else
             echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
           fi
