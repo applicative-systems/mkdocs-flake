@@ -63,6 +63,8 @@
             ];
           };
 
+          documentation.mkdocs-root = "./documentation";
+
           packages = {
             default = config.packages.mkdocs;
 
@@ -108,7 +110,8 @@
               in
                 optionsDoc.optionsCommonMark;
 
-            documentation =
+
+            documentation-pages =
               let
                 mkdocs-root = pkgs.runCommand "documentation" {} ''
                   cp -r ${./documentation} $out
@@ -144,15 +147,6 @@
               runAsRoot = ''
                 #!${pkgs.runtimeShell}
                 ${pkgs.dockerTools.shadowSetup}
-              '';
-            };
-          };
-
-          apps = {
-            default = {
-              type = "app";
-              program = pkgs.writeScriptBin "mkdocs-watch" ''
-                ${config.packages.mkdocs}/bin/mkdocs serve
               '';
             };
           };

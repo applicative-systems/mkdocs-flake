@@ -1,17 +1,19 @@
-{ pkgs, lib, config, system, mkdocs-flake, ... }:
+{ flakeSelf, pkgs, lib, config, system, mkdocs-flake, ... }:
 
 let
   cfg = config.documentation;
 
   strict = lib.optionalString cfg.strict "--strict";
+  docsRoot = flakeSelf + "/" + cfg.mkdocs-root;
 in
 
 {
   options.documentation = {
     mkdocs-root = lib.mkOption {
-      type = lib.types.nullOr lib.types.path;
+      type = lib.types.nullOr lib.types.str;
       default = null;
-      description = "Path to your mkdocs documentation project with mkdocs.yml";
+      example = "./documentation";
+      description = "Path to your mkdocs documentation project with mkdocs.yml. Relative from your flake.nix.";
     };
 
     mkdocs-package = lib.mkOption {
@@ -31,13 +33,23 @@ in
 
   config = lib.mkIf (cfg.mkdocs-root != null) {
     packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" {} ''
-      cd ${cfg.mkdocs-root}
+      cd ${docsRoot}
       ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
     '';
 
     apps.watch-documentation = {
       type = "app";
       program = pkgs.writeShellScriptBin "mkdocs-watch" ''
+        set -euo pipefail
+        if ! test -f mkdocs.yml; then
+          if test -f "${docsRoot}/mkdocs.yml"; then
+            echo "Your documentation is in ${docsRoot}. Switching into that folder."
+            cd "${docsRoot}"
+          else
+            echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
+          fi
+        fi
+
         ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
       '';
     };

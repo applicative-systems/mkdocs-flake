@@ -6,6 +6,7 @@ mkdocs-flake: { self, flake-parts-lib, lib, ... }: {
 
     config = {
       _module.args.mkdocs-flake = mkdocs-flake;
+      _module.args.flakeSelf = self;
     };
   });
 

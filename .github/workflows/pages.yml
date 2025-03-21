@@ -31,7 +31,7 @@ jobs:
       - uses: cachix/cachix-action@v12
         with:
           name: appsys
-      - run: nix -L build .#documentation && cp --recursive --dereference --no-preserve=mode,ownership result static_content
+      - run: nix -L build .#documentation-pages && cp --recursive --dereference --no-preserve=mode,ownership result static_content
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact

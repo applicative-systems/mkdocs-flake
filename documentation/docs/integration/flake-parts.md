@@ -30,7 +30,7 @@ A complete example looks like this:
       packages.default = pkgs.hello;
 
       # (3) point mkdocs-flake to your mkdocs root folder
-      documentation.mkdocs-root = ./docs;
+      documentation.mkdocs-root = "./docs";
 
       # (4) Build the docs:
       #     `nix build .#documentation`
