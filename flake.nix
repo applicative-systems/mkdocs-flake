@@ -33,7 +33,6 @@
         };
       };
 
-      debug = true;
 
       systems = [
         "aarch64-linux"
