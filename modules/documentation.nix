@@ -52,6 +52,7 @@ in
 
         ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
       '';
+      meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
     };
   };
 }
