@@ -5,11 +5,6 @@ let
 
   buildSystemOverrides = {
     mkdocs-exclude.setuptools = [];
-    mkdocs-get-deps.hatchling = [];
-    mkdocs-glightbox.setuptools = [];
-    mkdocs-drawio-exporter.poetry-core = [];
-    mkdocs-redirects.hatchling = [];
-    plantuml-markdown.setuptools = [];
   };
 
 in
