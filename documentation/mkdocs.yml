@@ -9,15 +9,14 @@ copyright: Copyright &copy; 2024 Applicative Systems GmbH
 nav:
   - Home: index.md
   - Reference:
-    - reference/index.md
-    - Diagrams: reference/diagrams.md
-    - Code: reference/code.md
+      - reference/index.md
+      - Diagrams: reference/diagrams.md
+      - Code: reference/code.md
   - Integration:
-    - integration/index.md
-    - No Integration: integration/simple-usage.md
-    - Plain Nix Flakes: integration/flake.md
-    - flake.parts: integration/flake-parts.md
-
+      - integration/index.md
+      - No Integration: integration/simple-usage.md
+      - Plain Nix Flakes: integration/flake.md
+      - flake.parts: integration/flake-parts.md
 
 plugins:
   - glightbox
@@ -26,7 +25,6 @@ plugins:
   - search
   #- social # does not work within sandboxed builds: tries fonts.google.com
   - tags
-
 
 theme:
   font: false
@@ -91,10 +89,6 @@ theme:
       toggle:
         icon: material/weather-night
         name: Switch to system preference
-
-
-  icon:
-    logo: logo
 
 markdown_extensions:
   - abbr

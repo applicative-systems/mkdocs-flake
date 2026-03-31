@@ -1,4 +1,12 @@
-{ flakeSelf, pkgs, lib, config, system, mkdocs-flake, ... }:
+{
+  flakeSelf,
+  pkgs,
+  lib,
+  config,
+  system,
+  mkdocs-flake,
+  ...
+}:
 
 let
   cfg = config.documentation;
@@ -18,7 +26,7 @@ in
     mkdocs-package = lib.mkOption {
       type = lib.types.package;
       default = mkdocs-flake.withSystem system ({ config, ... }: config.packages.mkdocs);
-      defaultText = ''mkdocs-flake.packages.''${system}.mkdocs'';
+      defaultText = "mkdocs-flake.packages.\${system}.mkdocs";
       description = "The mkdocs package to use.";
     };
 
@@ -31,7 +39,7 @@ in
   };
 
   config = lib.mkIf (cfg.mkdocs-root != null) {
-    packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" {} ''
+    packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
       cd ${cfg.mkdocs-root}
       ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
     '';
@@ -41,7 +49,9 @@ in
       program = pkgs.writeShellScriptBin "mkdocs-watch" ''
         set -euo pipefail
         if ! test -f mkdocs.yml; then
-          rel_path=${lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root}
+          rel_path=${
+            lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
+          }
           if test -f "$rel_path/mkdocs.yml"; then
             echo "Your documentation is in $rel_path. Switching into that folder."
             cd "$rel_path"

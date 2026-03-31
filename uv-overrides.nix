@@ -4,7 +4,7 @@ let
   inherit (builtins) mapAttrs;
 
   buildSystemOverrides = {
-    mkdocs-exclude.setuptools = [];
+    mkdocs-exclude.setuptools = [ ];
   };
 
 in
