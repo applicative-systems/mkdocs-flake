@@ -9,22 +9,30 @@
     mkdocs-flake.url = "github:applicative-systems/mkdocs-flake";
   };
 
-  outputs = inputs: inputs.flake-parts.lib.mkFlake { inherit inputs; } {
-    # (2) import mkdocs-flake module
-    imports = [
-      inputs.mkdocs-flake.flakeModules.default
-    ];
-    systems = [ "x86_64-linux" "aarch64-linux" "aarch64-darwin" ];
-    perSystem = { config, self', inputs', pkgs, system, ... }: {
-      packages.default = pkgs.hello;
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } {
+      # (2) import mkdocs-flake module
+      imports = [
+        inputs.mkdocs-flake.flakeModules.default
+      ];
+      systems = [
+        "x86_64-linux"
+        "aarch64-linux"
+        "aarch64-darwin"
+      ];
+      perSystem =
+        { pkgs, ... }:
+        {
+          packages.default = pkgs.hello;
 
-      # (3) point mkdocs-flake to your mkdocs root folder
-      documentation.mkdocs-root = ./docs;
+          # (3) point mkdocs-flake to your mkdocs root folder
+          documentation.mkdocs-root = ./docs;
 
-      # (4) Build the docs:
-      #     `nix build .#documentation`
-      #     Run in watch mode for live-editing-rebuilding:
-      #     `nix run .#watch-documentation`
+          # (4) Build the docs:
+          #     `nix build .#documentation`
+          #     Run in watch mode for live-editing-rebuilding:
+          #     `nix run .#watch-documentation`
+        };
     };
-  };
 }

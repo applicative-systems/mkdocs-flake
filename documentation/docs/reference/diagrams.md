@@ -1,4 +1,3 @@
-
 This mkdocs distribution provides two ways to provide diagrams that are
 calculated from semantic text input:
 
@@ -13,7 +12,7 @@ descriptions to PNG format at build time.
 
 ### Examples
 
-```` markdown title="PlantUML chart"
+````markdown title="PlantUML chart"
 ```plantuml
 @startuml
 !include <edgy/edgy>
@@ -89,7 +88,7 @@ $flowLeft(product, brand, "embodies")
 
 Worth mentioning is especially the [C4](https://c4model.com/) standard library:
 
-```` markdown title="PlantUML chart"
+````markdown title="PlantUML chart"
 ```plantuml
 @startuml
 !include <C4/C4_Container>
@@ -131,8 +130,8 @@ for more infos.
 
 ### Examples
 
-```` markdown title="Mermaid Graph Example"
-``` mermaid
+````markdown title="Mermaid Graph Example"
+```mermaid
 graph LR
   A[Start] --> B{Error?};
   B -->|Yes| C[Hmm...];
@@ -142,7 +141,7 @@ graph LR
 ```
 ````
 
-``` mermaid
+```mermaid
 graph LR
   A[Start] --> B{Error?};
   B -->|Yes| C[Hmm...];
@@ -151,8 +150,8 @@ graph LR
   B ---->|No| E[Yay!];
 ```
 
-```` markdown title="Mermaid Sequence Example"
-``` mermaid
+````markdown title="Mermaid Sequence Example"
+```mermaid
 sequenceDiagram
   autonumber
   Alice->>John: Hello John, how are you?
@@ -166,7 +165,7 @@ sequenceDiagram
 ```
 ````
 
-``` mermaid
+```mermaid
 sequenceDiagram
   autonumber
   Alice->>John: Hello John, how are you?

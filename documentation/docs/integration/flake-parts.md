@@ -1,4 +1,3 @@
-
 If you already use [flake.parts](https://flake.parts) in your project, then
 integrating mkdocs-flake is done with 3 steps:
 

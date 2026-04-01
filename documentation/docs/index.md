@@ -27,9 +27,10 @@ The best way to use this project is via [Nix](https://nixos.org).
 
 1. [Install Nix](https://nixos.org/download/)
 2. Run this command inside your mkdocs project:
-  ```console
-  nix run github:applicative-systems/mkdocs-flake
-  ```
+
+```console
+nix run github:applicative-systems/mkdocs-flake
+```
 
 That's it, you can live-edit your documentation.
 
@@ -176,14 +177,13 @@ Rel_U(systemAlias, extSystemAlias, "Label", "Optional Technology")
 @enduml
 ```
 
-
 ### Code
 
 The code blocks with annotation support as
 [documented by mkdocs-material](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/)
 work out of the box:
 
-``` py title="bubble_sort.py"
+```py title="bubble_sort.py"
 def bubble_sort(items):
     for i in range(len(items)):
         for j in range(len(items) - 1 - i): # (1)
@@ -191,8 +191,8 @@ def bubble_sort(items):
                 items[j], items[j + 1] = items[j + 1], items[j]
 ```
 
-1.  :man_raising_hand: I'm a code annotation! I can contain `code`, __formatted
-    text__, images, ... basically anything that can be written in Markdown.
+1.  :man_raising_hand: I'm a code annotation! I can contain `code`, **formatted
+    text**, images, ... basically anything that can be written in Markdown.
 
 ### Math
 
