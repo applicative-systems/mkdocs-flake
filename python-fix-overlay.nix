@@ -1,11 +1,17 @@
 final: prev: {
-  cairocffi = prev.cairocffi.overrideAttrs (_old: {
-    postInstall = ''
-      (
-        cd $out/lib/python3*/site-packages/cairocffi
-        patch="${builtins.head final.pkgs.python3Packages.cairocffi.patches}"
-        patch -p2 < "$patch"
-      )
-    '';
-  });
+  cairocffi =
+    (prev.cairocffi.override {
+      sourcePreference = "sdist";
+    }).overrideAttrs
+      (old: {
+        nativeBuildInputs = old.nativeBuildInputs ++ [
+          (final.resolveBuildSystem {
+            flit-core = [ ];
+          })
+        ];
+
+        patches = (old.patches or [ ]) ++ [
+          (builtins.head final.pkgs.python3Packages.cairocffi.patches)
+        ];
+      });
 }
