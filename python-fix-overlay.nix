@@ -10,8 +10,6 @@ final: prev: {
           })
         ];
 
-        patches = (old.patches or [ ]) ++ [
-          (builtins.head final.pkgs.python3Packages.cairocffi.patches)
-        ];
+        patches = (old.patches or [ ]) ++ final.pkgs.python3Packages.cairocffi.patches;
       });
 }
