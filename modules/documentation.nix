@@ -113,7 +113,7 @@ in
               echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
             fi
 
-            ${cfg.mkdocs-package}/bin/mkdocs serve "''${mkdocs_args[@]}"
+            exec ${cfg.mkdocs-package}/bin/mkdocs serve "''${mkdocs_args[@]}"
           '';
           meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
         };
