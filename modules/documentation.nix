@@ -59,16 +59,15 @@ in
       type = "app";
       program = pkgs.writeShellScriptBin "mkdocs-watch" ''
         set -euo pipefail
-        if ! test -f mkdocs.yml; then
-          rel_path=${
-            lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
-          }
-          if test -f "$rel_path/mkdocs.yml"; then
-            echo "Your documentation is in $rel_path. Switching into that folder."
-            cd "$rel_path"
-          else
-            echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
-          fi
+        rel_path=${
+          lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
+        }
+        cd "$rel_path"
+        if test -f "$rel_path/mkdocs.yml"; then
+          echo "Your documentation is in $rel_path. Switching into that folder."
+          cd "$rel_path"
+        else
+          echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
         fi
 
         ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
