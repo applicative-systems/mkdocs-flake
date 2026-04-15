@@ -29,7 +29,10 @@
           # (3) point mkdocs-flake to your mkdocs root folder
           documentation.mkdocs-root = ./docs;
 
-          # (4) Build the docs:
+          # (4, optional) configure mkdocs settings
+          documentation.settings.site_name = "My Docs";
+
+          # (5) Build the docs:
           #     `nix build .#documentation`
           #     Run in watch mode for live-editing-rebuilding:
           #     `nix run .#watch-documentation`
