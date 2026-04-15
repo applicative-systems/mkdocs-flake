@@ -72,45 +72,49 @@ in
     };
   };
 
-  config = lib.mkIf (cfg.mkdocs-root != null) {
-    # some mkdocs plugins want to create a .cache folder.
-    # so we link to the project from the build dir.
-    # the hook allows the user to prepopulate font files to help avoid mkdocs
-    # connecting to the internet.
-    packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
-      cp -as ${cfg.mkdocs-root}/* .
-      eval "${cfg.mkdocs-preBuildHook}"
-      ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
-    '';
+  config = lib.mkIf (cfg.mkdocs-root != null) (
+    lib.mkMerge [
+      {
+        # some mkdocs plugins want to create a .cache folder.
+        # so we link to the project from the build dir.
+        # the hook allows the user to prepopulate font files to help avoid mkdocs
+        # connecting to the internet.
+        packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
+          cp -as ${cfg.mkdocs-root}/* .
+          eval "${cfg.mkdocs-preBuildHook}"
+          ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
+        '';
 
-    apps.watch-documentation = {
-      type = "app";
-      program = pkgs.writeShellScriptBin "mkdocs-watch" ''
-        set -euo pipefail
-        rel_path=${
-          lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
-        }
-        cd "$rel_path"
+        apps.watch-documentation = {
+          type = "app";
+          program = pkgs.writeShellScriptBin "mkdocs-watch" ''
+            set -euo pipefail
+            rel_path=${
+              lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
+            }
+            cd "$rel_path"
 
-        mkdocs_args=(
-          ${strict}
-        )
-        config_file=${lib.optionalString (configFile != null) (toString configFile)}
-        if [[ ! -z "$config_file" ]]; then
-          mkdocs_args+=(
-            --config-file "$config_file"
-          )
-        elif [[ -f mkdocs.yml ]]; then
-          mkdocs_args+=(
-            --config-file mkdocs.yml
-          )
-        else
-          echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
-        fi
+            mkdocs_args=(
+              ${strict}
+            )
+            config_file=${lib.optionalString (configFile != null) (toString configFile)}
+            if [[ ! -z "$config_file" ]]; then
+              mkdocs_args+=(
+                --config-file "$config_file"
+              )
+            elif [[ -f mkdocs.yml ]]; then
+              mkdocs_args+=(
+                --config-file mkdocs.yml
+              )
+            else
+              echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
+            fi
 
-        ${cfg.mkdocs-package}/bin/mkdocs serve "''${mkdocs_args[@]}"
-      '';
-      meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
-    };
-  };
+            ${cfg.mkdocs-package}/bin/mkdocs serve "''${mkdocs_args[@]}"
+          '';
+          meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
+        };
+      }
+    ]
+  );
 }
