@@ -3,7 +3,7 @@ name = "mkdocs-distro"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 dependencies = [
     "cairosvg>=2.7.1",
     "mkdocs-autorefs>=1.4.1",
