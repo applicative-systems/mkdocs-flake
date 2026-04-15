@@ -102,6 +102,9 @@ in
               mkdocs_args+=(
                 --config-file "$config_file"
               )
+              if [[ -f mkdocs.yml ]]; then
+                2>&1 echo 'warning: local file `mkdocs.yml'"'"' ignored due to `documentation.settings'"'"
+              fi
             elif [[ -f mkdocs.yml ]]; then
               mkdocs_args+=(
                 --config-file mkdocs.yml
