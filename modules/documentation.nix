@@ -30,6 +30,12 @@ in
       description = "The mkdocs package to use.";
     };
 
+    mkdocs-preBuildHook = lib.mkOption {
+      type = lib.types.lines;
+      default = "";
+      description = "script to run in build directory before calling mkdocs. Can be used to prepare .cache directory with Google fonts so mkdocs does not attempt to download them.";
+    };
+
     strict = lib.mkEnableOption ''
       Build the documentation with `--strict`
 
@@ -39,8 +45,13 @@ in
   };
 
   config = lib.mkIf (cfg.mkdocs-root != null) {
+    # some mkdocs plugins want to create a .cache folder.
+    # so we link to the project from the build dir.
+    # the hook allows the user to prepopulate font files to help avoid mkdocs
+    # connecting to the internet.
     packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
-      cd ${cfg.mkdocs-root}
+      cp -as ${cfg.mkdocs-root}/* .
+      eval "${cfg.mkdocs-preBuildHook}"
       ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
     '';
 

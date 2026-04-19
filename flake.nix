@@ -79,9 +79,7 @@
               sourcePreference = "wheel";
             };
 
-            pyprojectOverrides = import ./uv-overrides.nix;
-
-            python = pkgs.python312;
+            python = pkgs.python3;
 
             pythonSet =
               (pkgs.callPackage inputs.pyproject-nix.build.packages {
@@ -91,7 +89,8 @@
                   lib.composeManyExtensions [
                     inputs.pyproject-build-systems.overlays.default
                     overlay
-                    pyprojectOverrides
+                    (import ./uv-overrides.nix)
+                    (import ./python-fix-overlay.nix)
                   ]
                 );
 

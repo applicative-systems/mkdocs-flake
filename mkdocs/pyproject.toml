@@ -27,3 +27,9 @@ dependencies = [
     "pillow>=11.1.0",
     "plantuml-markdown>=3.11.1",
 ]
+
+[tool.uv]
+# https://github.com/mkdocs/mkdocs/issues/4032
+constraint-dependencies = [
+  "click<=8.2.1"
+]
