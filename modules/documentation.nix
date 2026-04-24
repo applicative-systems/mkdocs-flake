@@ -40,8 +40,10 @@ in
 
     mkdocs-package = lib.mkOption {
       type = lib.types.package;
-      default = mkdocs-flake.withSystem system ({ config, ... }: config.packages.mkdocs);
-      defaultText = "mkdocs-flake.packages.\${system}.mkdocs";
+      default = mkdocs-flake.withSystem system (
+        { config, ... }: config.packages.mkdocs.override { runtimeInputs = cfg.mkdocs-runtimeInputs; }
+      );
+      defaultText = "mkdocs-flake.packages.\${system}.mkdocs.override { runtimeInputs = cfg.mkdocs-runtimeInputs; }";
       description = "The mkdocs package to use.";
     };
 
@@ -49,6 +51,20 @@ in
       type = lib.types.lines;
       default = "";
       description = "script to run in build directory before calling mkdocs. Can be used to prepare .cache directory with Google fonts so mkdocs does not attempt to download them.";
+    };
+
+    mkdocs-runtimeInputs = lib.mkOption {
+      type = lib.types.listOf lib.types.package;
+      default = [ pkgs.plantuml ];
+      defaultText = "with pkgs; [ plantuml ]";
+      example = ''
+        with pkgs; [
+          bash
+          coreutils
+          gnused
+        ]
+      '';
+      description = "Runtime inputs of mkdocs. Allows to make additional tools available when building the documentation.";
     };
 
     strict = lib.mkEnableOption ''

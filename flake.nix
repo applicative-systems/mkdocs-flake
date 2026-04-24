@@ -137,14 +137,17 @@
               default = config.packages.mkdocs;
 
               mkdocs-python = pythonSet.mkVirtualEnv "mkdocs-env" workspace.deps.default;
-              mkdocs = pkgs.runCommand "mkdocs" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
-                makeWrapper ${config.packages.mkdocs-python}/bin/properdocs $out/bin/mkdocs \
-                  --set PATH ${
-                    lib.makeBinPath [
-                      pkgs.plantuml
-                    ]
-                  }
-              '';
+              mkdocs = pkgs.callPackage (
+                {
+                  makeWrapper,
+                  runCommand,
+                  runtimeInputs ? [ pkgs.plantuml ],
+                }:
+                runCommand "mkdocs" { nativeBuildInputs = [ makeWrapper ]; } ''
+                  makeWrapper ${config.packages.mkdocs-python}/bin/mkdocs $out/bin/mkdocs \
+                    --set PATH ${lib.makeBinPath runtimeInputs}
+                ''
+              ) { };
 
               flake-parts-options =
                 let
