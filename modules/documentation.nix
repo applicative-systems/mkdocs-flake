@@ -67,6 +67,23 @@ in
       description = "Runtime inputs of mkdocs. Allows to make additional tools available when building the documentation.";
     };
 
+    overrideAttrs = lib.mkOption {
+      type = lib.types.raw;
+      default = _final: _prev: { };
+      defaultText = "final: prev: {}";
+      example = ''
+        final: prev: {
+          requiredSystemFeatures = [ "recursive-nix" ];
+          NIX_CONFIG = '''
+            experimental-features = nix-command recursive-nix
+            store = unix:///build/.nix-socket
+            substituters = unix:///build/.nix-socket
+          ''';
+        }
+      '';
+      description = "Extension (`overrideAttrs`) for the `documentation` derivation.";
+    };
+
     strict = lib.mkEnableOption ''
       Build the documentation with `--strict`
 
@@ -106,28 +123,30 @@ in
         # so we link to the project from the build dir.
         # the hook allows the user to prepopulate font files to help avoid mkdocs
         # connecting to the internet.
-        packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
-          cd ${abs_docs_dir}
-          mkdocs_args=(
-            --site-dir $out
-            ${strict}
-          )
-          config_file=${lib.optionalString (configFile != null) (toString configFile)}
-          if [[ ! -z "$config_file" ]]; then
-            mkdocs_args+=(
-              --config-file "$config_file"
+        packages.documentation =
+          (pkgs.runCommand "mkdocs-flake-documentation" { } ''
+            cd ${abs_docs_dir}
+            mkdocs_args=(
+              --site-dir $out
+              ${strict}
             )
-            if [[ -f mkdocs.yml ]]; then
-              2>&1 echo 'warning: local file `mkdocs.yml'"'"' ignored due to `documentation.settings'"'"
+            config_file=${lib.optionalString (configFile != null) (toString configFile)}
+            if [[ ! -z "$config_file" ]]; then
+              mkdocs_args+=(
+                --config-file "$config_file"
+              )
+              if [[ -f mkdocs.yml ]]; then
+                2>&1 echo 'warning: local file `mkdocs.yml'"'"' ignored due to `documentation.settings'"'"
+              fi
+            elif [[ -f mkdocs.yml ]]; then
+              mkdocs_args+=(
+                --config-file mkdocs.yml
+              )
             fi
-          elif [[ -f mkdocs.yml ]]; then
-            mkdocs_args+=(
-              --config-file mkdocs.yml
-            )
-          fi
-          eval "${cfg.mkdocs-preBuildHook}"
-          ${cfg.mkdocs-package}/bin/mkdocs build "''${mkdocs_args[@]}"
-        '';
+            eval "${cfg.mkdocs-preBuildHook}"
+            ${cfg.mkdocs-package}/bin/mkdocs build "''${mkdocs_args[@]}"
+          '').overrideAttrs
+            cfg.overrideAttrs;
 
         apps.watch-documentation = {
           type = "app";
