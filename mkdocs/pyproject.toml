@@ -28,6 +28,7 @@ dependencies = [
     "mkdocs-swagger-ui-tag>=0.6.11",
     "pillow>=11.1.0",
     "plantuml-markdown>=3.11.1",
+    "properdocs-theme-mkdocs>=1.6.7",
 ]
 
 [tool.uv]

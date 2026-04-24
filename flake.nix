@@ -48,9 +48,15 @@
 
           templates = {
             default = {
-              path = ./template;
+              path = ./template/default;
               description = ''
                 A minimal flake using mkdocs-flake.
+              '';
+            };
+            references = {
+              path = ./template/references;
+              description = ''
+                TODO
               '';
             };
           };
@@ -220,6 +226,39 @@
             checks = config.packages // {
               devShell = config.packages.default;
               formatting = treefmtEval.config.build.check inputs.self;
+              references =
+                let
+                  inherit ((builtins.getFlake "path:${toString ./.}?dir=template/references").packages.x86_64-linux)
+                    documentation
+                    ;
+                in
+                pkgs.runCommand "references" { } ''
+                  cd ${documentation}
+
+                  expectedOutput='NixOS module: foo
+                  I am a NixOS module.
+                  Feature 1
+                  I am feature 1 of NixOS module foo.
+                  (lib.mkIf (config ? "something") {
+                    foo = "bar";
+                  })
+
+                  Feature 2
+                  I am feature 2 of NixOS module foo.
+                  {
+                    baz = "bang";
+                    quux = lib.mkDefault null; # this should not render
+                  }'
+                  output=$(
+                    <${documentation}/references/modules-nixos/foo/index.html \
+                    ${lib.getExe pkgs.htmlq} --text --ignore-whitespace 'div[role=main]'
+                  )
+                  ${lib.getExe' pkgs.diffutils "diff"} --unified \
+                    <(echo "$expectedOutput") \
+                    <(echo "$output")
+
+                  touch $out
+                '';
             };
           };
       }

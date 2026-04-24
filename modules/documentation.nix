@@ -14,7 +14,7 @@ let
   strict = lib.optionalString cfg.strict "--strict";
 
   yaml = pkgs.formats.yaml { };
-  abs_docs_dir = cfg.mkdocs-root;
+  abs_docs_dir = "${flakeSelf.outPath}/${rel_docs_dir}";
   rel_docs_dir = lib.path.removePrefix (
     /. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)
   ) cfg.mkdocs-root;
@@ -91,7 +91,7 @@ in
         # the hook allows the user to prepopulate font files to help avoid mkdocs
         # connecting to the internet.
         packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
-          cd ${cfg.mkdocs-root}
+          cd ${abs_docs_dir}
           mkdocs_args=(
             --site-dir $out
             ${strict}
