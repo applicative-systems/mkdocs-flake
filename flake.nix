@@ -152,6 +152,9 @@
                         apps = fakeOption;
                         packages = fakeOption;
                       };
+                      config._module.args.pkgs = {
+                        inherit (pkgs) formats;
+                      };
                     };
                   eval = pkgs.lib.evalModules {
                     modules = [

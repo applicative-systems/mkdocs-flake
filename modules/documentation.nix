@@ -12,6 +12,18 @@ let
   cfg = config.documentation;
 
   strict = lib.optionalString cfg.strict "--strict";
+
+  yaml = pkgs.formats.yaml { };
+  configFile =
+    if cfg.settings != null then
+      yaml.generate "mkdocs.yml" (
+        {
+          docs_dir = cfg.mkdocs-root;
+        }
+        // cfg.settings
+      )
+    else
+      null;
 in
 
 {
@@ -42,6 +54,22 @@ in
       See also [mkdocs user guide about `--strict`](https://www.mkdocs.org/user-guide/configuration/#strict)
 
     '';
+
+    settings = lib.mkOption {
+      type = lib.types.nullOr (
+        lib.types.submodule {
+          freeformType = yaml.type;
+        }
+      );
+      default = null;
+      description = ''
+        Contents of `mkdocs.yml`.
+
+        By setting this to anything other than `null` (the default), `mkdocs.yml` is synthesized from this definition.
+
+        Any `mkdocs.yml` on the filesystem is then ignored.
+      '';
+    };
   };
 
   config = lib.mkIf (cfg.mkdocs-root != null) {
@@ -63,14 +91,24 @@ in
           lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
         }
         cd "$rel_path"
-        if test -f "$rel_path/mkdocs.yml"; then
-          echo "Your documentation is in $rel_path. Switching into that folder."
-          cd "$rel_path"
+
+        mkdocs_args=(
+          ${strict}
+        )
+        config_file=${lib.optionalString (configFile != null) (toString configFile)}
+        if [[ ! -z "$config_file" ]]; then
+          mkdocs_args+=(
+            --config-file "$config_file"
+          )
+        elif [[ -f mkdocs.yml ]]; then
+          mkdocs_args+=(
+            --config-file mkdocs.yml
+          )
         else
           echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
         fi
 
-        ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
+        ${cfg.mkdocs-package}/bin/mkdocs serve "''${mkdocs_args[@]}"
       '';
       meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
     };
