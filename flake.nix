@@ -25,8 +25,6 @@
       inputs.uv2nix.follows = "uv2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
-    treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
   outputs =
@@ -94,14 +92,50 @@
                   ]
                 );
 
-            treefmtEval = inputs.treefmt-nix.lib.evalModule pkgs {
-              projectRootFile = "flake.nix";
-              programs = {
-                deadnix.enable = true;
-                nixfmt.enable = true;
-                prettier.enable = true;
-                shfmt.enable = true;
-                statix.enable = true;
+            treefmt = pkgs.treefmt.withConfig {
+              settings = {
+                tree-root-file = "flake.nix";
+                on-unmatched = "info";
+                formatter = {
+                  nixfmt = {
+                    command = lib.getExe pkgs.nixfmt;
+                    includes = [ "*.nix" ];
+                  };
+                  statix = {
+                    command = lib.getExe pkgs.statix;
+                    options = [ "fix" ];
+                    no-positional-arg-support = true;
+                    includes = [ "*.nix" ];
+                  };
+                  deadnix = {
+                    command = lib.getExe pkgs.deadnix;
+                    options = [ "--edit" ];
+                    includes = [ "*.nix" ];
+                  };
+                  prettier = {
+                    command = lib.getExe pkgs.prettier;
+                    options = [ "--write" ];
+                    includes = [
+                      "*.md"
+                      "*.yaml"
+                      "*.yml"
+                    ];
+                  };
+                  shfmt = {
+                    command = lib.getExe pkgs.shfmt;
+                    options = [
+                      "-w"
+                      "-i"
+                      "2"
+                      "-s"
+                    ];
+                    includes = [
+                      "*.sh"
+                      "*.bash"
+                      "*.envrc"
+                    ];
+                  };
+                };
               };
             };
           in
@@ -115,17 +149,18 @@
             };
 
             devShells.default = pkgs.mkShell {
-              nativeBuildInputs = [
+              packages = [
                 python.pkgs.plantuml-markdown
                 pkgs.fontconfig
                 pkgs.dejavu_fonts
                 pkgs.uv
+                inputs.self.formatter.${system}
               ];
             };
 
             documentation.mkdocs-root = ./documentation;
 
-            formatter = treefmtEval.config.build.wrapper;
+            formatter = treefmt;
 
             packages = {
               default = config.packages.mkdocs;
@@ -216,7 +251,7 @@
 
             checks = config.packages // {
               devShell = config.packages.default;
-              formatting = treefmtEval.config.build.check inputs.self;
+              formatting = treefmt.check inputs.self;
             };
           };
       }
