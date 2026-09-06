@@ -51,7 +51,7 @@ TODO: Provide dockerhub image from
 ### Diagrams
 
 [Mermaid](https://squidfunk.github.io/mkdocs-material/reference/diagrams/#usage)
-works out of the box, but we also added [PlantUML]() support!
+works out of the box, but we also added [PlantUML](<>) support!
 
 Plantuml is a bit more sophisticated than Mermaid and contains a
 [standard library](https://plantuml.com/stdlib)
