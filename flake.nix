@@ -217,7 +217,7 @@
                   sed -i 's|/nix/store/[^/]\+/||g' $out/integration/flake-parts.html
                 '';
             }
-            // lib.optionalAttrs pkgs.stdenv.isLinux {
+            // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
 
               docker = pkgs.dockerTools.buildImage {
                 name = "applicativesystems/mkdocs";
