@@ -5,6 +5,7 @@ let
 
   buildSystemOverrides = {
     mkdocs-exclude.setuptools = [ ];
+    watchdog.setuptools = [ ];
   };
 
 in
