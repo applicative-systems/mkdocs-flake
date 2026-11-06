@@ -12,4 +12,11 @@ final: prev: {
 
         patches = (old.patches or [ ]) ++ final.pkgs.python3Packages.cairocffi.patches;
       });
+
+  mkdocs-material = prev.mkdocs-material.overrideAttrs (old: {
+    postInstall = (old.postInstall or "") + ''
+      cp -r ${final.pkgs.callPackage ./vendored-js { }} \
+        $out/${final.python.sitePackages}/material/templates/assets/vendor
+    '';
+  });
 }
