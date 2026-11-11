@@ -10,18 +10,4 @@ final: prev: {
 
     in
     prev.plantuml.override { inherit jre; };
-
-  pythonPackagesOverlays = (prev.pythonPackagesOverlays or [ ]) ++ [
-    (_pFinal: _pPrev: {
-    })
-  ];
-
-  python311 =
-    let
-      self = prev.python311.override {
-        inherit self;
-        packageOverrides = prev.lib.composeManyExtensions final.pythonPackagesOverlays;
-      };
-    in
-    self;
 }
