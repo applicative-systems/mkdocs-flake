@@ -1,5 +1,12 @@
 # mkdocs-flake
 
+!!! warning "Development discontinued"
+
+    This project is no longer actively developed.
+    Its successor is [zensical-flake](https://github.com/applicative-systems/zensical-flake).
+    Please follow the [migration guide](https://applicative.systems/zensical-flake/migration.html)
+    to move your project over.
+
 This project makes integrating `mkdocs` with many plugins to your project easy.
 
 <figure markdown="span">

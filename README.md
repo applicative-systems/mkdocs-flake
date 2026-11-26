@@ -13,6 +13,12 @@ Easy MkDocs integration with plugins, Material Design, PlantUML, and more!
 
 </div>
 
+> [!WARNING]
+> **This project is no longer actively developed.**
+> Its successor is [zensical-flake](https://github.com/applicative-systems/zensical-flake).
+> Please follow the [migration guide](https://applicative.systems/zensical-flake/migration.html)
+> to move your project over.
+
 This project simplifies integrating [MkDocs](https://www.mkdocs.org/) with various plugins.
 Enjoy pre-bundled MkDocs, a beautiful Material Design theme, PlantUML integration,
 code block highlighting and annotations, and availability as a Nix Flake,
