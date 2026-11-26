@@ -2,25 +2,22 @@
 
     We assume that you have [nix](https://nixos.org) installed.
 
-To simply run the pre-bundled version of this mkdocs bundle on your own
-documentation, you can run it in wach mode via `nix run` even without cloning
+To simply run the pre-bundled version of this Zensical bundle on your own
+documentation, you can run it in watch mode via `nix run` even without cloning
 the repository:
 
 ```console
-nix run github:applicative-systems/mkdocs-flake
+nix run github:applicative-systems/mkdocs-flake -- serve
 ```
 
 Result:
 
 ```console
-$ nix run github:applicative-systems/mkdocs-flake
-INFO    -  Building documentation...
-INFO    -  Cleaning site directory
-INFO    -  Documentation built in 14.62 seconds
-INFO    -  [14:36:50] Watching paths for changes: 'docs', 'mkdocs.yml'
-INFO    -  [14:36:50] Serving on http://127.0.0.1:8000/foo/bar/
-INFO    -  [14:36:53] Browser connected:
-           http://localhost:8000/foo/bar/index.html
+$ nix run github:applicative-systems/mkdocs-flake -- serve
+Serving /path/to/your/docs/site on http://localhost:8000
+Build started
+No issues found
+Build finished in 14.62s
 ```
 
 This process watches changes and rebuilds the docs if necessary.
@@ -28,18 +25,13 @@ Keep it open while you are editing your docs.
 
 ### Command line reference
 
-Please refer to the [mkdocs documentation, section "Command Line Interface"](https://www.mkdocs.org/user-guide/cli/)
+Zensical knows the commands `new`, `build`, and `serve`.
+Run `nix run github:applicative-systems/mkdocs-flake -- --help` for details.
 
-This command runs mkdocs with the `serve` parameter for your convenience.
-
-```console
-nix run github:applicative-systems/mkdocs-flake
-```
-
-To run it with other parameters, do it like this:
+To build your documentation instead of serving it, run:
 
 ```console
-nix run github:applicative-systems/mkdocs-flake#mkdocs -- build --strict
+nix run github:applicative-systems/mkdocs-flake -- build --strict
 ```
 
 The `--strict` is optional but is helpful to avoid usual mistakes.

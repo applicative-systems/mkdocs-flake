@@ -1,6 +1,7 @@
 # mkdocs-flake
 
-This project makes integrating `mkdocs` with many plugins to your project easy.
+This project makes integrating [Zensical](https://zensical.org/), the successor
+of MkDocs and Material for MkDocs, into your project easy.
 
 <figure markdown="span">
   ![](forgot-docs.jpg){ width="400" }
@@ -9,13 +10,14 @@ This project makes integrating `mkdocs` with many plugins to your project easy.
 
 <div class="grid cards" markdown>
 
-- :simple-materialformkdocs: Pre-Bundled easy to use [Mkdocs](https://www.mkdocs.org/)
-- :simple-materialdesign: Cool [Mkdocs Material Design](https://squidfunk.github.io/mkdocs-material)
+- :simple-materialformkdocs: Pre-Bundled easy to use [Zensical](https://zensical.org/)
+- :simple-materialdesign: Compatible with existing `mkdocs.yml` projects
 - [:material-image-edit: Markdown-integrated [PlantUML](https://plantuml.com/)](reference/diagrams.md)
 - [:octicons-code-review-24: [Code Blocks](https://squidfunk.github.io/mkdocs-material/reference/code-blocks/) with highlights and annotations](reference/code.md)
 - :simple-nixos: Available as [Nix](https://nixos.org/) Flake
 - :simple-nixos: Available as [Flake-parts](https://flake.parts/) module
 - :simple-docker: Available as [Docker](https://www.docker.com/) Image
+- :material-shield-lock: [No third-party CDNs](#no-third-party-cdns): all scripts, styles, and emoji are bundled with your site
 
 </div>
 
@@ -26,10 +28,10 @@ This project makes integrating `mkdocs` with many plugins to your project easy.
 The best way to use this project is via [Nix](https://nixos.org).
 
 1. [Install Nix](https://nixos.org/download/)
-2. Run this command inside your mkdocs project:
+2. Run this command inside your documentation project:
 
 ```console
-nix run github:applicative-systems/mkdocs-flake
+nix run github:applicative-systems/mkdocs-flake -- serve
 ```
 
 That's it, you can live-edit your documentation.
@@ -44,7 +46,7 @@ This repo generates a docker image.
 TODO: Document
 
 TODO: Provide dockerhub image from
-<https://hub.docker.com/r/applicativesystems/mkdocs>
+<https://hub.docker.com/r/applicativesystems/zensical>
 
 ## Plugins
 
@@ -196,10 +198,27 @@ def bubble_sort(items):
 
 ### Math
 
-You can use [MathJax](https://squidfunk.github.io/mkdocs-material/reference/math/#mathjax)
-and [KaTeX](https://squidfunk.github.io/mkdocs-material/reference/math/#katex)
-out of the box:
+[MathJax](https://zensical.org/docs/authoring/math/) works out of the box,
+no extra JavaScript configuration needed. Just enable the
+`pymdownx.arithmatex` extension with `generic: true` and use `$$ ... $$` for
+block and `$ ... $` for inline formulas:
 
 $$
 \operatorname{ker} f=\{g\in G:f(g)=e_{H}\}{\mbox{.}}
 $$
+
+## No third-party CDNs
+
+The Zensical theme normally loads Mermaid, GLightbox, MathJax, emoji images,
+and some polyfills from `unpkg.com` and `cdn.jsdelivr.net` at runtime.
+This distribution ships pinned copies of all of them with the theme instead, so
+the generated sites don't make requests to foreign domains (except for the
+GitHub API, which fetches the repository star/fork count if you set
+`repo_url`):
+
+- Mermaid, GLightbox, MathJax, and the `offline` plugin's iframe-worker shim
+  are copied into `assets/vendor/` of your site and loaded only when needed.
+- Emoji like `:man_raising_hand:` are inlined as SVG into the HTML.
+
+If your configuration adds MathJax itself (e.g. via `extra_javascript`), the
+bundled loader steps aside.

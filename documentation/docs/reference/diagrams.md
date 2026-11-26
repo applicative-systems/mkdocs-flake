@@ -1,4 +1,4 @@
-This mkdocs distribution provides two ways to provide diagrams that are
+This Zensical distribution provides two ways to provide diagrams that are
 calculated from semantic text input:
 
 ## Plantuml

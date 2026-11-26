@@ -1,5 +1,5 @@
 To build documentation in your project with just plain nix flakes, use the
-`mkdocs` package that `mkdocs-flake` provides.
+`zensical` package that `mkdocs-flake` provides.
 
 Example:
 
@@ -21,15 +21,15 @@ Example:
     {
       # Build documentation as package output
       packages.${system}.default = pkgs.runCommand "documentation" {} ''
-        cp -r ${./docs}/* .
-        ${mkdocs-flake.packages.${system}.mkdocs}/bin/mkdocs build --strict
+        cp -r --no-preserve=mode ${./docs}/* .
+        ${mkdocs-flake.packages.${system}.zensical}/bin/zensical build --strict
         mv site $out
       '';
 
-      # Developer Shell with mkdocs and all the plugins
+      # Developer Shell with zensical and all the markdown extensions
       devShells.${system}.default = pkgs.mkShell {
         buildInputs = [
-          mkdocs-flake.packages.${system}.mkdocs
+          mkdocs-flake.packages.${system}.zensical
         ];
       };
 

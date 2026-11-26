@@ -3,7 +3,7 @@ integrating mkdocs-flake is done with 3 steps:
 
 1. Add `mkdocs-flake` as a flake input
 2. Import the flake module
-3. Point mkdocs-flake to your documentation root (where the `mkdocs.yaml` is)
+3. Point mkdocs-flake to your documentation root (where the `zensical.toml` or `mkdocs.yml` is)
 
 A complete example looks like this:
 
@@ -28,8 +28,8 @@ A complete example looks like this:
     perSystem = { config, self', inputs', pkgs, system, ... }: {
       packages.default = pkgs.hello;
 
-      # (3) point mkdocs-flake to your mkdocs root folder
-      documentation.mkdocs-root = ./docs;
+      # (3) point mkdocs-flake to your documentation root folder
+      documentation.root = ./docs;
 
       # (4) Build the docs:
       #     `nix build .#documentation`
@@ -73,7 +73,7 @@ nix flake init -t github:applicative-systems/mkdocs-flake
 ```
 
 This will create an empty project with a `flake.nix` file (like the example
-above) and a minimal mkdocs project.
+above) and a minimal documentation project.
 
 Here, you can run `nix build .#documentation` or `nix run .#watch-documentation`
 

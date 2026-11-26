@@ -1,5 +1,5 @@
 {
-  description = "Mkdocs Distribution Flake";
+  description = "Zensical Distribution Flake";
 
   inputs = {
     flake-parts.url = "github:hercules-ci/flake-parts";
@@ -48,7 +48,7 @@
             default = {
               path = ./template;
               description = ''
-                A minimal flake using mkdocs-flake.
+                A minimal flake using mkdocs-flake with Zensical.
               '';
             };
           };
@@ -79,6 +79,8 @@
 
             python = pkgs.python3;
 
+            vendor = pkgs.callPackage ./vendor.nix { };
+
             pythonSet =
               (pkgs.callPackage inputs.pyproject-nix.build.packages {
                 inherit python;
@@ -87,8 +89,8 @@
                   lib.composeManyExtensions [
                     inputs.pyproject-build-systems.overlays.default
                     overlay
-                    (import ./uv-overrides.nix)
                     (import ./python-fix-overlay.nix)
+                    (import ./zensical-vendor-overlay.nix { inherit vendor; })
                   ]
                 );
 
@@ -158,16 +160,16 @@
               ];
             };
 
-            documentation.mkdocs-root = ./documentation;
+            documentation.root = ./documentation;
 
             formatter = treefmt;
 
             packages = {
-              default = config.packages.mkdocs;
+              default = config.packages.zensical;
 
-              mkdocs-python = pythonSet.mkVirtualEnv "mkdocs-env" workspace.deps.default;
-              mkdocs = pkgs.runCommand "mkdocs" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
-                makeWrapper ${config.packages.mkdocs-python}/bin/mkdocs $out/bin/mkdocs \
+              zensical-python = pythonSet.mkVirtualEnv "zensical-env" workspace.deps.default;
+              zensical = pkgs.runCommand "zensical" { nativeBuildInputs = [ pkgs.makeWrapper ]; } ''
+                makeWrapper ${config.packages.zensical-python}/bin/zensical $out/bin/zensical \
                   --set PATH ${
                     lib.makeBinPath [
                       pkgs.plantuml
@@ -203,38 +205,36 @@
                 in
                 optionsDoc.optionsCommonMark;
 
-              documentation-pages =
-                let
-                  mkdocs-root = pkgs.runCommand "documentation" { } ''
-                    cp -r ${./documentation} $out
-                    substituteInPlace $out/docs/integration/flake-parts.md \
-                      --replace "<!-- placeholder -->" "$(cat ${config.packages.flake-parts-options})"
-                  '';
-                in
-                pkgs.runCommand "mkdocs-flake-documentation" { } ''
-                  cd ${mkdocs-root}
-                  ${config.packages.mkdocs}/bin/mkdocs build --strict --site-dir $out
-                  sed -i 's|/nix/store/[^/]\+/||g' $out/integration/flake-parts.html
-                '';
+              documentation-pages = pkgs.runCommand "mkdocs-flake-documentation" { } ''
+                cp -r --no-preserve=mode ${./documentation} docs-root
+                cd docs-root
+                substituteInPlace docs/integration/flake-parts.md \
+                  --replace-fail "<!-- placeholder -->" "$(cat ${config.packages.flake-parts-options})"
+                ${config.packages.zensical}/bin/zensical build --strict
+                mv site $out
+                sed -i 's|/nix/store/[^/]\+/||g' $out/integration/flake-parts.html
+              '';
             }
             // lib.optionalAttrs pkgs.stdenv.hostPlatform.isLinux {
 
               docker = pkgs.dockerTools.buildImage {
-                name = "applicativesystems/mkdocs";
+                name = "applicativesystems/zensical";
                 tag = "latest";
 
                 copyToRoot = pkgs.buildEnv {
                   name = "image-root";
                   paths = [
-                    config.packages.mkdocs
+                    config.packages.zensical
                   ];
                   pathsToLink = [ "/bin" ];
                 };
 
                 config = {
                   Cmd = [
-                    "/bin/mkdocs"
+                    "/bin/zensical"
                     "serve"
+                    "--dev-addr"
+                    "0.0.0.0:8000"
                   ];
                   WorkingDir = "/data";
                   Volumes = {

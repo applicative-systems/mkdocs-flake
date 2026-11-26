@@ -26,8 +26,8 @@
         {
           packages.default = pkgs.hello;
 
-          # (3) point mkdocs-flake to your mkdocs root folder
-          documentation.mkdocs-root = ./docs;
+          # (3) point mkdocs-flake to your documentation root folder
+          documentation.root = ./docs;
 
           # (4) Build the docs:
           #     `nix build .#documentation`

@@ -12,68 +12,101 @@ let
   cfg = config.documentation;
 
   strict = lib.optionalString cfg.strict "--strict";
+
+  configFileNames = [
+    "zensical.toml"
+    "mkdocs.yml"
+  ];
 in
 
 {
+  imports = [
+    (lib.mkRenamedOptionModule [ "documentation" "mkdocs-root" ] [ "documentation" "root" ])
+    (lib.mkRenamedOptionModule [ "documentation" "mkdocs-package" ] [ "documentation" "package" ])
+    (lib.mkRenamedOptionModule
+      [ "documentation" "mkdocs-preBuildHook" ]
+      [ "documentation" "preBuildHook" ]
+    )
+  ];
+
   options.documentation = {
-    mkdocs-root = lib.mkOption {
+    root = lib.mkOption {
       type = lib.types.nullOr lib.types.path;
       default = null;
       example = "./documentation";
-      description = "Path to your mkdocs documentation project with mkdocs.yml. Relative from your flake.nix.";
+      description = ''
+        Path to your documentation project containing a `zensical.toml` or
+        `mkdocs.yml`. Relative from your flake.nix.
+      '';
     };
 
-    mkdocs-package = lib.mkOption {
+    package = lib.mkOption {
       type = lib.types.package;
-      default = mkdocs-flake.withSystem system ({ config, ... }: config.packages.mkdocs);
-      defaultText = "mkdocs-flake.packages.\${system}.mkdocs";
-      description = "The mkdocs package to use.";
+      default = mkdocs-flake.withSystem system ({ config, ... }: config.packages.zensical);
+      defaultText = "mkdocs-flake.packages.\${system}.zensical";
+      description = "The zensical package to use.";
     };
 
-    mkdocs-preBuildHook = lib.mkOption {
+    preBuildHook = lib.mkOption {
       type = lib.types.lines;
       default = "";
-      description = "script to run in build directory before calling mkdocs. Can be used to prepare .cache directory with Google fonts so mkdocs does not attempt to download them.";
+      description = ''
+        Script to run in the build directory before calling zensical.
+        Can be used to prepare files that would otherwise be downloaded.
+      '';
+    };
+
+    site-dir = lib.mkOption {
+      type = lib.types.str;
+      default = "site";
+      description = ''
+        The output directory of the build, relative to `documentation.root`.
+        Must match the `site_dir` setting of your configuration file.
+      '';
     };
 
     strict = lib.mkEnableOption ''
-      Build the documentation with `--strict`
-
-      See also [mkdocs user guide about `--strict`](https://www.mkdocs.org/user-guide/configuration/#strict)
-
+      Build the documentation with `--strict`, which aborts the build on warnings
     '';
   };
 
-  config = lib.mkIf (cfg.mkdocs-root != null) {
-    # some mkdocs plugins want to create a .cache folder.
-    # so we link to the project from the build dir.
-    # the hook allows the user to prepopulate font files to help avoid mkdocs
-    # connecting to the internet.
+  config = lib.mkIf (cfg.root != null) {
+    # zensical writes its output and a .cache folder into the project
+    # directory, so we build in a writable copy of the project.
     packages.documentation = pkgs.runCommand "mkdocs-flake-documentation" { } ''
-      cp -as ${cfg.mkdocs-root}/* .
-      eval "${cfg.mkdocs-preBuildHook}"
-      ${cfg.mkdocs-package}/bin/mkdocs build ${strict} --site-dir $out
+      cp -r --no-preserve=mode ${cfg.root} docs-root
+      cd docs-root
+      eval "${cfg.preBuildHook}"
+      ${cfg.package}/bin/zensical build ${strict}
+      mv ${lib.escapeShellArg cfg.site-dir} $out
     '';
 
     apps.watch-documentation = {
       type = "app";
-      program = pkgs.writeShellScriptBin "mkdocs-watch" ''
+      program = pkgs.writeShellScriptBin "zensical-watch" ''
         set -euo pipefail
-        if ! test -f mkdocs.yml; then
+        has_config() {
+          for f in ${lib.escapeShellArgs configFileNames}; do
+            test -f "$1/$f" && return 0
+          done
+          return 1
+        }
+        if ! has_config .; then
           rel_path=${
-            lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.mkdocs-root
+            lib.path.removePrefix (/. + (builtins.unsafeDiscardStringContext flakeSelf.outPath)) cfg.root
           }
-          if test -f "$rel_path/mkdocs.yml"; then
+          if has_config "$rel_path"; then
             echo "Your documentation is in $rel_path. Switching into that folder."
             cd "$rel_path"
           else
-            echo "Can't find mkdocs.yml. Is your flake's `documentation.mkdocs-root` set correctly?"
+            echo "Can't find zensical.toml or mkdocs.yml. Is your flake's \`documentation.root\` set correctly?"
+            exit 1
           fi
         fi
 
-        ${cfg.mkdocs-package}/bin/mkdocs serve ${strict}
+        exec ${cfg.package}/bin/zensical serve "$@"
       '';
-      meta.description = "Run mkdocs in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
+      meta.description = "Run zensical in watch mode over your documentation folder. Automatically rebuilds your docs on changes.";
     };
   };
 }

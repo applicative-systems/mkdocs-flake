@@ -6,6 +6,9 @@ edit_uri: edit/main/documentation/docs
 site_author: Jacek Galowicz
 copyright: Copyright &copy; 2024 Applicative Systems GmbH
 
+# keep the .html URLs of the already published site stable
+use_directory_urls: false
+
 nav:
   - Home: index.md
   - Reference:
@@ -21,7 +24,6 @@ nav:
 plugins:
   - glightbox
   #- info # only useful for debugging
-  - offline
   - search
   #- social # does not work within sandboxed builds: tries fonts.google.com
   - tags
@@ -98,36 +100,30 @@ markdown_extensions:
   - footnotes
   - md_in_html
   - plantuml_markdown
-  - pymdownx.superfences:
-      custom_fences:
-        - name: mermaid
-          class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.arithmatex:
       generic: true
   - pymdownx.betterem:
       smart_enable: all
   - pymdownx.caret
+  - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
       emoji_index: !!python/name:material.extensions.emoji.twemoji
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
-  - pymdownx.critic
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  - pymdownx.inlinehilite
   - pymdownx.keys
-  - pymdownx.keys
-  - pymdownx.mark
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.superfences
-  - pymdownx.tilde
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.tasklist:
@@ -135,10 +131,3 @@ markdown_extensions:
   - pymdownx.tilde
   - toc:
       permalink: true
-  - pymdownx.arithmatex:
-      generic: true
-
-extra_javascript:
-  - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js

@@ -2,7 +2,7 @@
 
 # mkdocs-flake
 
-Easy MkDocs integration with plugins, Material Design, PlantUML, and more!
+Easy [Zensical](https://zensical.org/) integration with Material Design, PlantUML, and more!
 
 **Developed and maintained by [Applicative Systems](https://applicative.systems/)**
 
@@ -13,24 +13,27 @@ Easy MkDocs integration with plugins, Material Design, PlantUML, and more!
 
 </div>
 
-This project simplifies integrating [MkDocs](https://www.mkdocs.org/) with various plugins.
-Enjoy pre-bundled MkDocs, a beautiful Material Design theme, PlantUML integration,
+This project simplifies integrating [Zensical](https://zensical.org/), the successor of
+MkDocs and Material for MkDocs, into your projects.
+Enjoy pre-bundled Zensical, a beautiful Material Design theme, PlantUML integration,
 code block highlighting and annotations, and availability as a Nix Flake,
 Flake-parts module, and Docker image.
 
 ## Key Features
 
-- **Pre-Bundled and Easy to Use:** Get started with MkDocs quickly.
-- **MkDocs Material Design:** Beautiful and modern documentation.
+- **Pre-Bundled and Easy to Use:** Get started with Zensical quickly.
+- **Material Design:** Beautiful and modern documentation.
+- **MkDocs compatible:** Existing `mkdocs.yml` projects work as they are.
 - **Markdown-Integrated PlantUML:** Create diagrams directly in your documentation.
 - **Enhanced Code Blocks:** Highlighting and annotations for your code samples.
 - **Nix Flake:** Seamless integration with Nix.
 - **Flake-parts Module:** Easily incorporate into your Nix projects.
 - **Docker Image:** Convenient deployment and usage.
+- **No third-party CDNs:** Mermaid, MathJax, GLightbox, and emoji are bundled with your site.
 
 ## Try it
 
-There are multiple simple ways to use this mkdocs distribution:
+There are multiple simple ways to use this Zensical distribution:
 [integration documentation](https://applicative.systems/mkdocs-flake/integration/).
 
 ### Docker
