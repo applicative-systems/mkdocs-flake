@@ -23,6 +23,16 @@ in
   zensical-ui = prev.zensical-ui.overrideAttrs (old: {
     postInstall = (old.postInstall or "") + ''
       templates=${sitePackages}/zensical_ui/templates
+
+      # Simple Icons ship with a <title> element (Material for MkDocs stripped
+      # it). Its text ends up in heading anchors, e.g. `### :simple-nixos: Nix`
+      # gets `#nixos-nix` instead of `#nix`, breaking existing links.
+      find $templates/.icons -name '*.svg' -exec sed -i 's|<title>[^<]*</title>||' {} +
+      if grep -rlq '<title>' $templates/.icons; then
+        echo "zensical-ui icons still contain <title> elements" >&2
+        exit 1
+      fi
+
       cp -r ${vendor.assets} $templates/assets/vendor
       chmod -R u+w $templates/assets/vendor
 
